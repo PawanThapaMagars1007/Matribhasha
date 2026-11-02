@@ -1,0 +1,1 @@
+export function Brand({ light = false }) { return <span className={`brand ${light ? 'brand-light' : ''}`}><span className="brand-mark" aria-hidden="true"><i /><i /><i /></span><span><b>मातृभाषा</b><small>MATRIBHASHA</small></span></span>; }
