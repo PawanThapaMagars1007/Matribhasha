@@ -1,33 +1,21 @@
 # Development roadmap
 
-## Phase 1 — Foundation (current)
+## Phase 1 — Foundation (preserved)
 
-React/Vite client, responsive visual system and navigation, account registration/login, JWT middleware, Mongoose User and Language models, profile/preferences APIs, health endpoint, environment template, and architecture docs. Email verification, OAuth, password reset, token refresh, and media are not configured.
+React/Vite client, responsive shell, account registration/login, JWT middleware, Mongoose User and Language models, profile/preferences APIs, health endpoint, and environment template.
 
-## Phase 2 — Language infrastructure
+## Phase 2 — Language infrastructure (implemented foundation)
 
-Varieties, scripts, alphabet categories, characters, phonemes, recording metadata, admin CRUD with backend role checks, contribution provenance and review. Add only sourced or clearly unreviewed language content.
+Independent Language, LanguageVariety, and Script models; public filtered catalog APIs; role-protected language/script management foundations; user known/native/learning/preferred-variety selections; discovery, details, and settings interfaces; draft-only development seed; data and API documentation. Alphabet learning, characters, and courses are intentionally not included.
 
 ## Phase 3 — Learning
 
-Courses, lessons, activities, quizzes, vocabulary, dictionary, grammar, bookmarks and progress calculated from completed activities.
+Language-specific character categories and graphemes, writing practice, pronunciation, courses, lessons, activities, quizzes, vocabulary, and progress. These should reference language, optional variety, and script and retain review provenance.
 
-## Phase 4 — Voice
+## Later phases
 
-Consent-aware recording, native audio playback, storage adapter, provider capability registry for speech/AI, and manual fallback for unsupported languages.
-
-## Phase 5 — Community
-
-Contributions, review queues, revision history, cultural resources, reporting, permissions and moderation.
-
-## Phase 6 — Advanced
-
-Supported AI conversations, speech services only for validated languages, offline learning, recommendations and analytics.
-
-## Phase 7 — Finalization
-
-Automated tests, threat review, accessibility and responsive audits, performance, deployment docs and operational monitoring.
+Consent-aware voice features, community contribution and review, cultural resources, moderation, accessibility/performance audits, deployment, and monitoring.
 
 ## External setup
 
-Phase 1 needs a MongoDB URI and JWT secret. Email delivery is needed for verification/reset. Cloudinary or S3 is needed for audio/image persistence. Speech and AI credentials, if used later, remain backend-only and must be selected after verifying language coverage and consent requirements.
+Set `MONGODB_URI` and a long random `JWT_SECRET` in `server/.env`. Email delivery, OAuth, media storage, and speech providers remain unconfigured and are not represented as working features.

@@ -8,6 +8,8 @@ import { connectDatabase } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import languageRoutes from './routes/languages.js';
+import varietyRoutes from './routes/varieties.js';
+import scriptRoutes from './routes/scripts.js';
 import { errorHandler, notFound } from './middleware/errors.js';
 
 const app = express();
@@ -20,6 +22,8 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok', database: mongoos
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/languages', languageRoutes);
+app.use('/api/varieties', varietyRoutes);
+app.use('/api/scripts', scriptRoutes);
 app.use(notFound);
 app.use(errorHandler);
 

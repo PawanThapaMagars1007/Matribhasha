@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
     async register(details) { const { data } = await api.post('/auth/register', details); localStorage.setItem('matribhasha-token', data.token); setUser(data.user); return data.user; },
     async logout() { try { await api.post('/auth/logout'); } finally { localStorage.removeItem('matribhasha-token'); setUser(null); } },
     async updatePreferences(preferences) { const { data } = await api.put('/users/preferences', preferences); setUser(data.user); return data.user; },
+    async updateLanguagePreferences(preferences) { const { data } = await api.put('/users/languages', preferences); setUser(data.user); return data.user; },
   }), [user, loading]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

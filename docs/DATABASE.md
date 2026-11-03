@@ -1,19 +1,32 @@
-# Database design
+# Database design — Phase 2
 
-## Implemented
+MongoDB stores independently managed languages, varieties, and writing systems. All records use Mongoose timestamps, explicit publication state, an active flag, and verification metadata where linguistic claims are made.
 
-### User
+## Collections and relationships
 
-Stores display name, optional unique username, normalized unique email, bcrypt password hash (excluded by default), role, profile picture URL, verification/disable state, timestamps, and preferences. Preferences support interface language, multiple known and learning language references, proficiency, learning modes, and a daily goal.
+- **User** keeps account and Phase 1 preferences. `nativeLanguages`, `knownLanguages`, and `learningLanguages` are separate arrays of `Language` references. `interfaceLanguage` remains independent. `preferredVarieties` stores a language/variety pair and is validated against the variety's parent language when saved.
+- **Language** holds names, aliases, description, optional ISO code, region tags, an optional reviewed family claim, availability, resources, provenance, publication state, and references to scripts and varieties. Language records are not oversized course documents; learning modules can reference the language later.
+- **LanguageVariety** belongs to one parent language, has its own names, regions, aliases, availability, scripts, provenance, and publication state. Boundaries need not imply standardization.
+- **Script** is independent from languages and varieties. Its language and variety associations are references, so one script can serve multiple languages and one language can use multiple scripts. Direction, Unicode range, font requirements, and verification are optional.
 
-### Language
+```text
+User.preferences ──< known/native/learning ──> Language
+User.preferences ──< preferredVarieties ──> (Language, LanguageVariety)
+Language ──< LanguageVariety
+Language >──< Script
+LanguageVariety >──< Script
+```
 
-Stores names, aliases, description, optional code, variety/script references, verification metadata and publication state. A text index covers names and aliases. Public API results only include published records. Unreviewed content is not treated as verified.
+## Validation and indexes
 
-## Planned collections
+Language names and variety names are required. Nonempty language codes are unique; the code field is optional because not every record has a verified code. Variety names are unique within a parent language; script names are unique. Search indexes cover language names and aliases. Compound publication and parent indexes support catalog queries. Public endpoints require active, published records. Legacy Phase 1 `isPublished` records remain readable; writing status synchronizes that compatibility field.
 
-LanguageVariety, Script, AlphabetCategory, Character, Phoneme, PronunciationRecording, Course, Module, Lesson, Activity, DictionaryEntry, Translation, ExampleSentence, Quiz, QuizQuestion, UserLearningLanguage, LearningProgress, VocabularyBookmark, UserRecording, Conversation, Achievement, UserXP, CommunityContribution, ContentReview, CulturalResource, Notification, ContentReport, and AdminAuditLog. Their schemas should retain source/consent, verification, provenance, and revision history where relevant.
+Unreviewed records may be prepared as drafts, but publishing a language or script requires verified status. Never fill family, code, native name, or script associations from guesswork. Preserve Unicode exactly as submitted.
 
-## Modeling notes
+## Development seed
 
-Use ObjectId references for mutable entities and stable language/script codes where available; do not assume every language has a code, standard orthography, alphabet, or speech technology. Preserve native text as Unicode without transliteration on write. Index public lookup fields and compound user/content references; paginate large collections. Audio consent, ownership, retention, and deletion state must be explicit before accepting user recordings.
+`server/src/seed/languages.js` exports a small draft-only seed set. It adds no native names, codes, families, or script associations; its explicit development provenance requires expert verification. Seed records are not visible through public catalog endpoints. Run `npm run seed --prefix server` with a configured MongoDB URI. The script is idempotent by language name.
+
+## Future learning data
+
+Alphabet categories, characters, pronunciation recordings, lessons, and progress are deliberately not implemented in Phase 2. Future records should reference language, optional variety, and script and allow language-specific character categories. They must retain verification, source, contributor consent, and revision provenance.

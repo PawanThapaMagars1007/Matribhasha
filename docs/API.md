@@ -1,22 +1,29 @@
 # API
 
-Base URL: `http://localhost:5000/api`. JSON responses use `{ message }`, `{ user }`, `{ languages, pagination }`, or `{ language }` envelopes. Protected endpoints accept `Authorization: Bearer <token>`.
+Base URL: `http://localhost:5000/api`. Protected routes accept `Authorization: Bearer <token>`. Responses use consistent resource envelopes and `{ message }` errors. Public collections only return active published records, except explicitly documented legacy published languages.
 
-| Method | Path | Access | Current behavior |
+| Method | Path | Access | Behavior |
 |---|---|---|---|
 | GET | `/health` | Public | API and MongoDB status |
-| POST | `/auth/register` | Public, rate-limited | Create learner and return JWT |
-| POST | `/auth/login` | Public, rate-limited | Authenticate and return JWT |
-| POST | `/auth/logout` | Public | Client session sign-out acknowledgement |
-| POST | `/auth/refresh` | Public | Returns 501 until refresh-token rotation is implemented |
-| POST | `/auth/forgot-password` | Public | Generic response; email delivery is not configured |
-| POST | `/auth/reset-password` | Public | Returns 501 until reset tokens and email delivery are implemented |
-| GET | `/auth/me` | Learner | Return current account |
-| GET/PUT | `/users/profile` | Learner | Read/update profile fields |
-| PUT | `/users/preferences` | Learner | Update validated learning preferences |
-| GET | `/languages?page=&limit=&q=` | Public | Search published language records |
-| GET | `/languages/:id` | Public | Read a published language |
-| GET | `/languages/:id/varieties` | Public | Empty until Phase 2 |
-| GET | `/languages/:id/scripts` | Public | Empty until Phase 2 |
+| POST | `/auth/register`, `/auth/login` | Public, rate limited | Register/authenticate and return JWT |
+| GET | `/auth/me` | Signed in | Current account |
+| GET/PUT | `/users/profile` | Signed in | Read/update profile |
+| PUT | `/users/preferences` | Signed in | Update learning modes, level, goal, interface language, and legacy language preference arrays |
+| GET/PUT | `/users/languages` | Signed in | Read or update native, known, target, interface language and preferred-variety settings |
+| GET | `/languages?page=&limit=&q=&region=&availability=` | Public | Paginated published language discovery |
+| GET | `/languages/search?q=` | Public | Search up to 20 published languages |
+| GET | `/languages/:id` | Public | Published language details, scripts, and varieties |
+| GET | `/languages/:id/varieties` | Public | Published varieties for language |
+| GET | `/languages/:id/scripts` | Public | Published scripts for language |
+| GET | `/varieties?page=&limit=&language=` | Public | Paginated published varieties |
+| GET | `/varieties/:id` | Public | Published variety detail |
+| GET | `/scripts?page=&limit=` | Public | Paginated published scripts |
+| GET | `/scripts/:id` | Public | Published script detail and associations |
+| POST/PUT | `/languages`, `/languages/:id` | Language admin, expert, reviewer, or super admin | Create/update language; verified before publication |
+| GET | `/languages/managed?page=&limit=&status=` and `/languages/managed/:id` | Language admin, expert, reviewer, or super admin | Review draft and unpublished language records |
+| POST | `/languages/:id/varieties` | Language admin, expert, reviewer, or super admin | Add a variety to a language |
+| POST | `/scripts` | Language admin, expert, or super admin | Add a script |
+| PUT | `/scripts/:id` | Language admin, expert, or super admin | Update script, associations, verification, or publication state |
+| PUT | `/varieties/:id` | Language admin, expert, reviewer, or super admin | Update variety, script associations, verification, or publication state |
 
-Public language listing is paginated (default 24, maximum 50). Authentication uses bearer JWTs; role middleware is available for upcoming admin routes.
+Limits are clamped to 1–50 (default 24), search input is bounded, and user updates only affect the authenticated user's own record. Invalid IDs return 404. Language and variety associations are validated server-side.

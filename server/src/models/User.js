@@ -9,8 +9,10 @@ const userSchema = new mongoose.Schema({
   profilePicture: { type: String, default: '' },
   preferences: {
     interfaceLanguage: { type: String, default: 'en' },
+    nativeLanguages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Language' }],
     knownLanguages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Language' }],
     learningLanguages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Language' }],
+    preferredVarieties: [{ language: { type: mongoose.Schema.Types.ObjectId, ref: 'Language', required: true }, variety: { type: mongoose.Schema.Types.ObjectId, ref: 'LanguageVariety', required: true } }],
     proficiencyLevel: { type: String, enum: ['beginner', 'elementary', 'intermediate', 'advanced'], default: 'beginner' },
     learningPreferences: [{ type: String, enum: ['reading', 'listening', 'speaking', 'writing', 'games'] }],
     dailyGoalMinutes: { type: Number, min: 5, max: 180, default: 10 },
@@ -21,5 +23,4 @@ const userSchema = new mongoose.Schema({
   disabledAt: { type: Date, default: null },
 }, { timestamps: true, toJSON: { transform(_doc, ret) { delete ret.passwordHash; delete ret.__v; return ret; } } });
 
-userSchema.index({ email: 1 }, { unique: true });
 export const User = mongoose.model('User', userSchema);

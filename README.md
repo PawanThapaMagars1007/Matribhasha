@@ -2,41 +2,34 @@
 
 **Learn your roots. Discover new languages.**
 
-Matribhasha is a MERN platform for learning, speaking, writing, and preserving the languages and cultural knowledge of Nepal. The project is being built in phases. This repository currently contains the Phase 1 foundation: a responsive React experience, MongoDB/Mongoose models, Express API, JWT-based sign-up and sign-in, profile preferences, and a data-driven language catalog endpoint.
+Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. The Phase 2 foundation adds independent language, variety, and writing-system records; reviewed public discovery; user language preferences; and role-protected catalog management foundations. It does not claim that courses, alphabet lessons, or pronunciation modules are available.
 
-## Requirements
+## Requirements and setup
 
-- Node.js 20 or newer
-- MongoDB 6 or newer, local or hosted
-- npm
+- Node.js 20 or newer, MongoDB 6 or newer, npm.
+- Copy `.env.example` to `server/.env` and set `MONGODB_URI` and a long random `JWT_SECRET`.
+- Run `npm install` in the repository root, `client`, and `server`.
+- Run `npm run dev` from the root. Client: `http://localhost:5173`; API: `http://localhost:5000`.
+- `GET /api/health` reports API and database availability.
+- Optionally run `npm run seed --prefix server` to insert clearly marked, unpublished development language records.
 
-## Setup
+## Phase 2 features
 
-1. Copy `.env.example` to `server/.env` and set `MONGODB_URI` and a long random `JWT_SECRET`.
-2. Install dependencies from the repository root, `client`, and `server` with `npm install` in each folder.
-3. Run `npm run dev` from the root. The React app runs at `http://localhost:5173`; the API runs at `http://localhost:5000`.
-4. `GET /api/health` reports API and database availability.
+- Separate Language, LanguageVariety, and Script records, with optional classifications and verification sources.
+- Published language discovery with search, region/availability filters, and pagination.
+- Language detail pages with available varieties and writing systems.
+- Multiple native, known, and learning language preferences; interface language is a separate setting.
+- Server-side role checks for language and script management operations.
 
-If MongoDB is not configured, the server can start in API-only mode, but registration, login, profile, and catalog operations need a database connection.
+## API
 
-## Current API
+Authentication: `/api/auth/register`, `/login`, `/me`. User profile and preferences: `/api/users/profile`, `/api/users/preferences`, `/api/users/languages`. Catalog: `/api/languages`, `/api/languages/:id`, `/api/languages/:id/varieties`, `/api/languages/:id/scripts`, `/api/varieties`, `/api/scripts`. See [docs/API.md](docs/API.md) for access and query details.
 
-- `POST /api/auth/register`, `/login`, `/logout`, `/refresh`, `/forgot-password`, `/reset-password`
-- `GET /api/auth/me`
-- `GET /api/users/profile`, `PUT /api/users/profile`, `PUT /api/users/preferences`
-- `GET /api/languages`, `GET /api/languages/:id`, `GET /api/languages/:id/varieties`, `GET /api/languages/:id/scripts`
-- `GET /api/health`
+## Architecture and data care
 
-Registration returns a short-lived bearer JWT. Passwords are hashed with bcrypt. Keep the JWT secret private. Email verification, password reset delivery, Google sign-in, refresh-token rotation, media storage, and account deletion are not configured in this foundation and are not represented as operational features.
+- `client/`: React, React Router, Axios, Tailwind build setup, and responsive design system.
+- `server/src/routes/`: Express APIs and request validation.
+- `server/src/models/`: Mongoose account and language infrastructure models.
+- `docs/`: architecture, database relationships, API, data guidelines, and roadmap.
 
-## Architecture
-
-- `client/`: React, React Router, Axios, Tailwind build setup, and shared responsive design system.
-- `server/src/routes/`: Express REST endpoints and request validation.
-- `server/src/models/`: Mongoose schemas for users and languages.
-- `server/src/middleware/`: authentication, roles, and centralized error responses.
-- `docs/`: system, data, API, language-content, and delivery guidance.
-
-## Next
-
-See [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md). The next phase is configurable languages, varieties, scripts, alphabet categories, and characters. Native pronunciation, translations, and writing instructions must be sourced and reviewed by knowledgeable contributors before being presented as verified content.
+Do not infer codes, language family, native names, script associations, or varieties. Unverified records remain unpublished. See [docs/LANGUAGE_DATA_GUIDELINES.md](docs/LANGUAGE_DATA_GUIDELINES.md).
