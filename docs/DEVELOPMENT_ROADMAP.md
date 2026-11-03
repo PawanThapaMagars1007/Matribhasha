@@ -8,9 +8,13 @@ React/Vite client, responsive shell, account registration/login, JWT middleware,
 
 Independent Language, LanguageVariety, and Script models; public filtered catalog APIs; role-protected language/script management foundations; user known/native/learning/preferred-variety selections; discovery, details, and settings interfaces; draft-only development seed; data and API documentation. Alphabet learning, characters, and courses are intentionally not included.
 
-## Phase 3 — Learning
+## Phase 3 — Alphabet, writing systems, and pronunciation (implemented foundation)
 
-Language-specific character categories and graphemes, writing practice, pronunciation, courses, lessons, activities, quizzes, vocabulary, and progress. These should reference language, optional variety, and script and retain review provenance.
+Configurable character categories and orthographic units, reviewed character browsing, pronunciation and approved audio, local freehand and microphone practice, recognition/matching/listening sessions, and per-user progress. Alphabet information is not seeded; communities and experts must provide and review it.
+
+## Phase 4 — Vocabulary and sentence learning
+
+Vocabulary, dictionary, grammar and sentence-based learning. This phase has not been started.
 
 ## Later phases
 

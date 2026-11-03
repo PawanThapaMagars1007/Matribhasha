@@ -27,6 +27,26 @@ Unreviewed records may be prepared as drafts, but publishing a language or scrip
 
 `server/src/seed/languages.js` exports a small draft-only seed set. It adds no native names, codes, families, or script associations; its explicit development provenance requires expert verification. Seed records are not visible through public catalog endpoints. Run `npm run seed --prefix server` with a configured MongoDB URI. The script is idempotent by language name.
 
-## Future learning data
+## Phase 3 learning collections
 
-Alphabet categories, characters, pronunciation recordings, lessons, and progress are deliberately not implemented in Phase 2. Future records should reference language, optional variety, and script and allow language-specific character categories. They must retain verification, source, contributor consent, and revision provenance.
+- **CharacterCategory** belongs to a language and script and optionally one variety. Category names and order are configurable for each writing system; no universal alphabet taxonomy is assumed.
+- **Character** represents a grapheme or other orthographic learning unit. It references a language, one script, an optional variety and category, and carries contextual notes, examples, and optional transliteration. It does not conflate a character with a phoneme.
+- **Pronunciation** references a character, language and optional variety. It stores notation separately from audio and records source, attribution, speaker label, and review state.
+- **AudioAsset** stores metadata and a generated storage key for a locally stored, signature-checked audio file. Consent and attribution are required for upload. Audio is served only after review and publication.
+- **LearningProgress** is unique per user and character. It counts views, writing/listening/quiz activities, answers and learning time; status advances only through practice or an explicit completion action.
+- **PracticeSession** is user-owned and stores answer choices and the correct answer server-side so answer submissions are checked by the API.
+- **ContentRevision** snapshots category, character, and pronunciation records before edits, with actor and timestamp.
+
+```text
+Language ──< CharacterCategory >── Script
+Language ──< Character >── Script
+             │             └── optional LanguageVariety
+             ├── optional CharacterCategory
+             └──< Pronunciation >── AudioAsset
+User ──< LearningProgress >── Character
+User ──< PracticeSession
+```
+
+Character categories, characters, pronunciations, and audio remain drafts or under review until an authorized expert verifies and publishes them. Public character queries only return active, published, verified content; attached audio must also be consented, verified, and published. The local file adapter is suitable for development; deployments should replace it with durable private object storage while preserving this interface.
+
+Writing strokes and self-recordings stay in the browser. They are not uploaded or saved as media. The API stores only the learner's activity counts and elapsed time.

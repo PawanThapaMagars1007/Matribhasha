@@ -2,7 +2,7 @@
 
 **Learn your roots. Discover new languages.**
 
-Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. The Phase 2 foundation adds independent language, variety, and writing-system records; reviewed public discovery; user language preferences; and role-protected catalog management foundations. It does not claim that courses, alphabet lessons, or pronunciation modules are available.
+Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. Phase 3 extends the language foundation with reviewed writing units, flexible script-specific categories, pronunciation records, consent-reviewed audio, freehand writing practice, listening/recognition activities, and learner progress. Learning records are data-driven and are not seeded with invented alphabets or pronunciations.
 
 ## Requirements and setup
 
@@ -21,9 +21,18 @@ Matribhasha is a MERN platform for learning, exploring, documenting, and preserv
 - Multiple native, known, and learning language preferences; interface language is a separate setting.
 - Server-side role checks for language and script management operations.
 
+## Phase 3 features
+
+- Character categories and orthographic units are associated with languages, optional varieties, and scripts without assuming a universal alphabet.
+- Public learning content is visible only after verification and publication.
+- Learners can browse characters, hear approved recordings, practise drawing on a canvas, record their own voice locally, and complete recognition, matching, and listening questions from approved records.
+- Progress tracks views and practice actions separately from explicit completion. Quiz answers are checked against server-held practice sessions.
+- Audio uploads are signature checked, size limited, and require consent and attribution. Published audio is served only after review. Learner microphone recordings and canvas strokes are not uploaded.
+- The development audio adapter writes approved files under `server/storage/audio/` (ignored by Git); replace it with durable private object storage for deployment. No storage credentials are required by the client.
+
 ## API
 
-Authentication: `/api/auth/register`, `/login`, `/me`. User profile and preferences: `/api/users/profile`, `/api/users/preferences`, `/api/users/languages`. Catalog: `/api/languages`, `/api/languages/:id`, `/api/languages/:id/varieties`, `/api/languages/:id/scripts`, `/api/varieties`, `/api/scripts`. See [docs/API.md](docs/API.md) for access and query details.
+Authentication: `/api/auth/register`, `/login`, `/me`. User preferences: `/api/users/profile`, `/api/users/preferences`, `/api/users/languages`. Catalog: `/api/languages`, `/api/varieties`, `/api/scripts`. Learning content: `/api/characters`, `/api/pronunciations`, `/api/audio`, `/api/practice`. Expert content management: `/api/admin/learning`. See [docs/API.md](docs/API.md) for access and query details.
 
 ## Architecture and data care
 
