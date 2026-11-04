@@ -160,6 +160,7 @@ test('course modules and lessons preserve configured order and flexible block ty
 
 test('assessment answer keys are hidden by default and attempts store server scores', async () => {
   assert.equal(Assessment.schema.path('answerKey').options.select, false);
+  assert.ok(AssessmentAttempt.schema.indexes().some(([keys, options]) => options.unique && keys.attemptNumber === 1));
   const attempt = new AssessmentAttempt({ user: '507f1f77bcf86cd799439011', assessment: '507f1f77bcf86cd799439012', course: '507f1f77bcf86cd799439013', answers: { q1: 'a' }, score: 100, passed: true, attemptNumber: 1 });
   await attempt.validate();
   assert.equal(attempt.score, 100);

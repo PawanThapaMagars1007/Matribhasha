@@ -11,6 +11,8 @@
 
 Indexes cover language discovery, course sequence, user/course enrolment, user/lesson progress, assessment attempts, private conversation history, and unique achievement/certificate ownership.
 
+Assessment attempts include a unique compound index on `(user, assessment, attemptNumber)` to prevent concurrent submissions from allocating the same attempt number. Before deploying this index to an existing database, inspect for duplicate tuples and resolve them with an approved, backed-up migration; the application does not delete or rewrite existing attempts automatically. Configure the MongoDB pool with `MONGODB_MAX_POOL_SIZE` and verify query plans and slow-query metrics on representative data before adding further indexes. See `docs/PERFORMANCE.md` and `docs/BACKUP_AND_RECOVERY.md`.
+
 ## Phase 4 collections
 
 `VocabularyCategory`, `Vocabulary`, `WordMeaning`, `Translation`, `ExampleSentence`, `GrammarCategory`, `GrammarLesson`, and `SentenceExercise` hold reviewed content. Vocabulary pronunciations share `Pronunciation` with Phase 3 via mutually exclusive `character` or `vocabulary` references. `UserSavedWord`, `VocabularyProgress`, `VocabularyReview`, `GrammarProgress`, `SentencePracticeSession`, and `SentenceProgress` hold learner-private state. Exercise answers are hidden from ordinary model selection and copied only to owner-bound practice sessions.

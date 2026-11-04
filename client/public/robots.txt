@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /home
+Disallow: /settings
+Disallow: /my-community
+Disallow: /contribute
+Disallow: /admin/
+Disallow: /discussions
+Disallow: /tutor

@@ -26,12 +26,13 @@ All user-owned records are filtered by the authenticated user. Course and activi
 
 Learner content requires active, verified, published records and a published language. Sentence translations are individually verified. Private learning records are scoped to the authenticated user.
 
-Base URL: `http://localhost:5000/api`. Protected routes accept `Authorization: Bearer <token>`. Responses use consistent resource envelopes and `{ message }` errors. Public collections only return active published records, except explicitly documented legacy published languages.
+API base URL: `http://localhost:5000/api`. Browser clients authenticate with credentialed HttpOnly session cookies; mutating requests include the `mb_csrf` cookie value in `X-CSRF-Token`. The JWT is not returned in JSON. Responses use consistent resource envelopes and `{ message }` errors. Public collections only return active published records, except explicitly documented legacy published languages.
 
 | Method | Path | Access | Behavior |
 |---|---|---|---|
-| GET | `/health` | Public | API and MongoDB status |
-| POST | `/auth/register`, `/auth/login` | Public, rate limited | Register/authenticate and return JWT |
+| GET | `/health` | Public | Liveness and MongoDB status |
+| GET | `/health/ready` | Public | Readiness status; 503 while MongoDB is unavailable |
+| POST | `/auth/register`, `/auth/login` | Public, rate limited | Register/authenticate and set session/CSRF cookies |
 | GET | `/auth/me` | Signed in | Current account |
 | GET/PUT | `/users/profile` | Signed in | Read/update profile |
 | PUT | `/users/preferences` | Signed in | Update learning modes, level, goal, interface language, and legacy language preference arrays |
@@ -94,3 +95,4 @@ Limits are clamped (language and script catalog default 24; character default 30
 | POST `/:type/:id/reviews`, PUT `/:type/:id/publish`, PUT `/moderation/withdrawals/:id` | Authorized reviewers; community authorization required for scoped/restricted items | Record separate verification decisions and publication/takedown outcomes |
 
 Text search uses escaped, bounded Unicode-aware regular expressions. Access checks and publication/consent checks run before records are serialized. Community membership roles and explicit permissions are checked server-side. See the cultural and consent policy documents for review requirements and current media limitations.
+Logout increments the user's auth version and clears the session. Production `CLIENT_ORIGIN` must list exact HTTPS origins. These changes replace the former browser bearer-token flow.

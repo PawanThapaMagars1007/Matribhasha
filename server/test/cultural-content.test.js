@@ -26,11 +26,11 @@ test('story requires a language and supports audio-only and version metadata', a
 });
 
 test('public retrieval requires publication checks, and restricted content needs an explicit grant', async () => {
-  const originalConsent = ConsentRecord.exists;
+  const originalConsentFind = ConsentRecord.find;
   const originalPermission = ContentPermission.exists;
   const originalMembership = CommunityMembership.exists;
   try {
-    ConsentRecord.exists = async () => true;
+    ConsentRecord.find = () => ({ select() { return this; }, lean: async () => [{ scope: 'publication' }, { scope: 'text' }] });
     ContentPermission.exists = async () => false;
     CommunityMembership.exists = async () => false;
     const verified = { _id: new mongoose.Types.ObjectId(), status: 'published', accessLevel: 'public', consentRequired: true, verification: { cultural: 'verified', permission: 'verified', source: 'verified' } };
@@ -38,7 +38,28 @@ test('public retrieval requires publication checks, and restricted content needs
     assert.equal(await canAccessCulturalContent(null, 'cultural-entry', { ...verified, status: 'submitted' }), false);
     assert.equal(await canAccessCulturalContent(null, 'cultural-entry', { ...verified, accessLevel: 'restricted' }), false);
   } finally {
-    ConsentRecord.exists = originalConsent;
+    ConsentRecord.find = originalConsentFind;
+    ContentPermission.exists = originalPermission;
+    CommunityMembership.exists = originalMembership;
+  }
+});
+
+test('community permission grants cannot be used by a non-member', async () => {
+  const originalConsentFind = ConsentRecord.find;
+  const originalPermission = ContentPermission.exists;
+  const originalMembership = CommunityMembership.exists;
+  try {
+    ConsentRecord.find = () => ({ select() { return this; }, lean: async () => [{ scope: 'publication' }, { scope: 'text' }] });
+    ContentPermission.exists = async (query) => Boolean(query.community);
+    CommunityMembership.exists = async () => false;
+    const community = new mongoose.Types.ObjectId();
+    const user = { _id: new mongoose.Types.ObjectId(), role: 'learner' };
+    const doc = { _id: new mongoose.Types.ObjectId(), community, status: 'published', accessLevel: 'restricted', consentRequired: true, verification: { cultural: 'verified', permission: 'verified', source: 'verified', linguistic: 'verified' } };
+    assert.equal(await canAccessCulturalContent(user, 'cultural-entry', doc), false);
+    CommunityMembership.exists = async () => true;
+    assert.equal(await canAccessCulturalContent(user, 'cultural-entry', doc), true);
+  } finally {
+    ConsentRecord.find = originalConsentFind;
     ContentPermission.exists = originalPermission;
     CommunityMembership.exists = originalMembership;
   }

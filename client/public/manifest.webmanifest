@@ -1,0 +1,13 @@
+{
+  "id": "/",
+  "name": "Matribhasha — Learn your roots",
+  "short_name": "Matribhasha",
+  "description": "Learn your roots. Discover new languages.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#f7f8f5",
+  "icons": [{ "src": "/icons/matribhasha.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

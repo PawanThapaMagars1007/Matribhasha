@@ -1,74 +1,46 @@
 import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import { rateLimit } from 'express-rate-limit';
 import mongoose from 'mongoose';
+import { createApp } from './app.js';
 import { connectDatabase } from './config/db.js';
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
-import languageRoutes from './routes/languages.js';
-import varietyRoutes from './routes/varieties.js';
-import scriptRoutes from './routes/scripts.js';
-import characterRoutes from './routes/characters.js';
-import practiceRoutes from './routes/practice.js';
-import adminLearningRoutes from './routes/adminLearning.js';
-import audioRoutes from './routes/audio.js';
-import vocabularyRoutes from './routes/vocabulary.js';
-import grammarRoutes from './routes/grammar.js';
-import sentencePracticeRoutes from './routes/sentencePractice.js';
-import userLearningRoutes from './routes/userLearning.js';
-import dictionaryRoutes from './routes/dictionary.js';
-import adminContentRoutes from './routes/adminContent.js';
-import courseRoutes from './routes/courses.js';
-import learningActivityRoutes from './routes/learningActivities.js';
-import learnerHubRoutes from './routes/learnerHub.js';
-import culturalLibraryRoutes from './routes/culturalLibrary.js';
-import communityRoutes from './routes/communities.js';
-import contributionRoutes from './routes/contributions.js';
-import culturalModerationRoutes from './routes/culturalModeration.js';
-import discussionRoutes from './routes/discussions.js';
-import { errorHandler, notFound } from './middleware/errors.js';
+import { loadEnvironment } from './config/environment.js';
 
-const app = express();
-app.disable('x-powered-by');
-app.use(helmet());
-app.use(cors({ origin: (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',').map((value) => value.trim()), credentials: false }));
-app.use(express.json({ limit: '1mb' }));
-app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: 'draft-7', legacyHeaders: false }));
-app.get('/api/health', (_req, res) => res.json({ status: 'ok', database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' }));
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/languages', languageRoutes);
-app.use('/api/varieties', varietyRoutes);
-app.use('/api/scripts', scriptRoutes);
-app.use('/api', characterRoutes);
-app.use('/api/practice', practiceRoutes);
-app.use('/api/admin/learning', adminLearningRoutes);
-app.use('/api/admin/content', adminContentRoutes);
-app.use('/api/audio', audioRoutes);
-app.use('/api/users/learning', userLearningRoutes);
-app.use('/api', courseRoutes);
-app.use('/api/users', learnerHubRoutes);
-app.use('/api', learningActivityRoutes);
-app.use('/api', culturalLibraryRoutes);
-app.use('/api', communityRoutes);
-app.use('/api', contributionRoutes);
-app.use('/api', culturalModerationRoutes);
-app.use('/api', discussionRoutes);
-app.use('/api/sentence-practice', sentencePracticeRoutes);
-app.use('/api', vocabularyRoutes);
-app.use('/api', dictionaryRoutes);
-app.use('/api', grammarRoutes);
-app.use(notFound);
-app.use(errorHandler);
-
-const port = Number(process.env.PORT || 5000);
+let config;
 try {
-  if (process.env.MONGODB_URI) await connectDatabase();
-  else console.warn('MONGODB_URI is not configured; database features will be unavailable.');
-  app.listen(port, () => console.log(`Matribhasha API listening on port ${port}`));
+  config = loadEnvironment();
 } catch (error) {
-  console.error(`Startup failed: ${error.message}`);
+  console.error(JSON.stringify({ level: 'fatal', event: 'configuration_invalid', message: error.message }));
   process.exit(1);
 }
+
+const app = createApp(config);
+let server;
+try {
+  await connectDatabase(config);
+  server = app.listen(config.port, () => console.log(JSON.stringify({ level: 'info', event: 'server_started', port: config.port, environment: config.nodeEnv })));
+  server.headersTimeout = 65_000;
+  server.requestTimeout = 120_000;
+  server.keepAliveTimeout = 5_000;
+} catch (error) {
+  console.error(JSON.stringify({ level: 'fatal', event: 'startup_failed', name: error.name || 'Error', code: error.code || 'STARTUP_FAILED' }));
+  process.exit(1);
+}
+
+let shuttingDown = false;
+async function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(JSON.stringify({ level: 'info', event: 'shutdown_started', signal }));
+  const forceExit = setTimeout(() => process.exit(1), 15_000);
+  forceExit.unref();
+  try {
+    if (server) await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+    await mongoose.disconnect();
+    clearTimeout(forceExit);
+    process.exit(0);
+  } catch {
+    clearTimeout(forceExit);
+    process.exit(1);
+  }
+}
+process.once('SIGTERM', () => shutdown('SIGTERM'));
+process.once('SIGINT', () => shutdown('SIGINT'));

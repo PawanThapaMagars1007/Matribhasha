@@ -1,0 +1,3 @@
+import {useEffect,useState} from 'react';
+
+export function PwaUpdateNotice(){const[ready,setReady]=useState(false);useEffect(()=>{const show=()=>setReady(true);window.addEventListener('matribhasha:update-ready',show);return()=>window.removeEventListener('matribhasha:update-ready',show);},[]);if(!ready)return null;return <aside className="pwa-update" role="status"><span>A Matribhasha update is ready.</span><button type="button" onClick={async()=>{const registration=await navigator.serviceWorker.getRegistration();registration?.waiting?.postMessage({type:'SKIP_WAITING'});}}>Update now</button><button type="button" className="pwa-dismiss" aria-label="Dismiss update notice" onClick={()=>setReady(false)}>×</button></aside>}

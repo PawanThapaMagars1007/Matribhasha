@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, trim: true, lowercase: true, unique: true, maxlength: 254 },
   passwordHash: { type: String, required: true, select: false },
   role: { type: String, enum: ['learner', 'contributor', 'reviewer', 'languageExpert', 'languageAdmin', 'superAdmin', 'moderator', 'culturalReviewer', 'communityAdmin', 'researcher'], default: 'learner' },
+  authVersion: { type: Number, min: 0, default: 0, select: false },
   profilePicture: { type: String, default: '' },
   preferences: {
     interfaceLanguage: { type: String, default: 'en' },
@@ -21,6 +22,6 @@ const userSchema = new mongoose.Schema({
   passwordResetTokenHash: { type: String, select: false },
   passwordResetExpiresAt: { type: Date, select: false },
   disabledAt: { type: Date, default: null },
-}, { timestamps: true, toJSON: { transform(_doc, ret) { delete ret.passwordHash; delete ret.__v; return ret; } } });
+}, { timestamps: true, toJSON: { transform(_doc, ret) { delete ret.passwordHash; delete ret.authVersion; delete ret.__v; return ret; } } });
 
 export const User = mongoose.model('User', userSchema);

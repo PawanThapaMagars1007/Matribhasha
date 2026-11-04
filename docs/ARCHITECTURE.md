@@ -10,7 +10,7 @@ Lesson access requires enrollment, course/module/lesson publication and completi
 
 Vocabulary, WordMeaning, Translation, ExampleSentence, GrammarCategory, GrammarLesson, and SentenceExercise are independent, language-scoped records. Vocabulary can have multiple contextual meanings, translations, and pronunciations. Public route filters require published status, active state, and verified metadata; parent language publication is checked. Sentence translation subrecords are filtered individually. Exercise answers use a select-false model field and owner-bound server sessions. `UserSavedWord`, `VocabularyProgress`/`VocabularyReview`, `GrammarProgress`, and `SentenceProgress` are private and keyed by user. Admin content edits create `ContentRevision` snapshots.
 
-The application uses a React/Vite single-page client, an Express REST API, MongoDB, and Mongoose. The API owns authentication, validation, publication filtering, and role authorization. The client uses Axios and bearer JWTs and follows the existing responsive design system.
+The application uses a React/Vite single-page client, an Express REST API, MongoDB, and Mongoose. The API owns authentication, validation, publication filtering, and role authorization. Browser sessions use HttpOnly JWT cookies, a signed CSRF token for writes, and a per-user auth version for revocation. The client uses credentialed Axios requests and follows the existing responsive design system.
 
 ## Phase 2 boundaries
 

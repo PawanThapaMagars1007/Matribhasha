@@ -11,6 +11,8 @@ Matribhasha is a MERN platform for learning, exploring, documenting, and preserv
 - Run `npm install` in the repository root, `client`, and `server`.
 - Run `npm run dev` from the root. Client: `http://localhost:5173`; API: `http://localhost:5000`.
 - `GET /api/health` reports API and database availability.
+- `GET /health` is a liveness check; `GET /health/ready` waits for MongoDB readiness.
+- Run `npm test` and `npm run build` from the repository root for local checks.
 - Optionally run `npm run seed --prefix server` to insert clearly marked, unpublished development language records.
 
 ## Phase 2 features
@@ -72,3 +74,9 @@ Authentication: `/api/auth/register`, `/login`, `/me`. User preferences: `/api/u
 - `docs/`: architecture, database relationships, API, data guidelines, and roadmap.
 
 Do not infer codes, language family, native names, script associations, or varieties. Unverified records remain unpublished. See [docs/LANGUAGE_DATA_GUIDELINES.md](docs/LANGUAGE_DATA_GUIDELINES.md).
+
+## Phase 7 security and operations
+
+The API validates required configuration before startup, uses revocable HttpOnly cookie sessions with CSRF checks, exact credentialed CORS, bounded JSON requests, query/body safeguards, rate limits, request IDs, safe error responses, and readiness checks. The client lazy-loads page routes, has an error boundary, and offers a static-asset-only PWA cache; private API responses and media are excluded. English and Nepali shared navigation strings are centralized, while full-page translation is incomplete.
+
+Phase 7 is a production-readiness foundation, not a production certification. Durable private media storage, monitoring/alerting, scheduled backups, a live deployment, full database integration/E2E coverage, dependency advisory review, and device/accessibility verification still require external setup and operator validation. Read [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md), [docs/SECURITY.md](docs/SECURITY.md), and [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) before deployment.

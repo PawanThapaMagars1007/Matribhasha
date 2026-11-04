@@ -28,6 +28,12 @@ Community-scoped cultural entries, story and oral-history records, consent and a
 
 Accessibility/performance audits, deployment, monitoring, and further community-led workflows.
 
+## Phase 7 — security and production-readiness foundation
+
+Implemented: startup environment validation; revocable cookie sessions and CSRF checks; origin, body, query, and rate safeguards; request IDs, redacted errors, liveness/readiness endpoints, DB pool settings and graceful shutdown; lazy route chunks, app error fallback and static-only PWA support; shared English/Nepali chrome strings; cultural report/takedown review screens; operational, backup, security, performance, accessibility, testing, and deployment guides. The server suite and client catalog check pass, and the frontend builds with route chunks.
+
+Still required before production: private durable media storage; real MongoDB API integration and browser E2E suites; dependency vulnerability scanning from a networked environment; deployed monitoring, backup scheduling and restore rehearsal; migration preflight for the assessment-attempt unique index; domain/proxy testing; and human mobile, keyboard, screen-reader, contrast, and multilingual review. Current evidence and exact test results are in `docs/PRODUCTION_READINESS.md`.
+
 ## External setup
 
 Set `MONGODB_URI` and a long random `JWT_SECRET` in `server/.env`. Email delivery, OAuth, media storage, and speech providers remain unconfigured and are not represented as working features.
