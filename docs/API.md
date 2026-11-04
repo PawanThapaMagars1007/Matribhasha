@@ -74,3 +74,23 @@ Base URL: `http://localhost:5000/api`. Protected routes accept `Authorization: B
 | PUT | `/practice/progress/:id` | Signed in | Change the caller's own learning status |
 
 Limits are clamped (language and script catalog default 24; character default 30; progress default 50). Search inputs are bounded, and progress updates only affect the authenticated user's own records. Invalid IDs return 404. Language, variety, category, and script associations are validated server-side. For `POST /audio`, send raw audio bytes with an allowed audio `Content-Type`, `X-Recording-Consent: confirmed`, and `X-Audio-Attribution`; optional metadata headers include `X-Audio-Duration-Seconds`, `X-Speaker-Label`, and `X-Audio-Source`. The server checks the file signature and 10 MB limit. Uploads remain private/pending until review; approved playback is served through an opaque asset ID.
+
+## Phase 6 cultural and community API
+
+| Route | Access | Purpose |
+| --- | --- | --- |
+| GET `/culture`, `/culture/:id`, `/culture/categories` | Public where allowed; optional sign-in for protected scopes | Search and view cultural heritage |
+| GET `/stories`, `/stories/:id` | Public where allowed; optional sign-in for protected scopes | Browse original-language stories and oral histories |
+| GET `/cultural-media`, `/cultural-media/:id`, `/cultural-media/:id/stream` | Public where allowed; optional sign-in for protected scopes | Search media metadata and access-controlled audio playback |
+| GET `/communities`, `/communities/:id`, `/communities/:id/contributions` | Published pages; protected contributions filtered by access | Discover communities and their published material |
+| POST `/communities/:id/join` | Signed in | Request or create membership according to community policy |
+| GET/POST/PUT `/contributions`, `/contributions/:id`, `/users/contributions` | Signed in | Submit and manage one's cultural contribution records |
+| POST `/cultural-media/upload-audio` | Signed in | Submit consent-confirmed, signature-checked audio (10 MB maximum) |
+| GET/PUT `/users/contributor-profile`, GET `/contributors/:id` | Private settings; public profile only when opted in | Manage profile privacy and public contributor view |
+| GET `/discussions`, POST `/discussions`, GET `/discussions/:id` | Browse published posts; sign-in to post | Search and discuss language/culture topics |
+| POST `/discussions/:id/comments`, `/comments/:id/report`, `/discussions/:id/report` | Signed in | Comment, reply, and report discussion content |
+| GET/PUT `/notifications`, `/notifications/:id/read` | Own notifications | Review and mark notices read |
+| GET `/moderation/queue`, `/moderation/reports`, `/moderation/withdrawals` | Authorized community or platform reviewer | Review content and reports |
+| POST `/:type/:id/reviews`, PUT `/:type/:id/publish`, PUT `/moderation/withdrawals/:id` | Authorized reviewers; community authorization required for scoped/restricted items | Record separate verification decisions and publication/takedown outcomes |
+
+Text search uses escaped, bounded Unicode-aware regular expressions. Access checks and publication/consent checks run before records are serialized. Community membership roles and explicit permissions are checked server-side. See the cultural and consent policy documents for review requirements and current media limitations.

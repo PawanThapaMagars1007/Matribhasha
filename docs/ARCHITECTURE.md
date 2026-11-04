@@ -30,4 +30,8 @@ The application uses a React/Vite single-page client, an Express REST API, Mongo
 
 ## Phase 1 compatibility
 
+## Phase 6 — cultural preservation and community workflows
+
+CulturalEntry, Story, CulturalMedia, CommunitySubmission, Community, and scoped review/consent/permission records extend the existing User, Language, LanguageVariety, AudioAsset, and notification infrastructure. Culture library routes filter access before returning records. Optional bearer authentication lets anonymous users see public content while registered members can receive their approved scope. Audio routes repeat cultural access checks so an asset URL cannot bypass its linked content restrictions. Community discussions, comments, reports, reactions, follows, and moderation records use separate collections and audit entries. Audio uses private local development storage; deployments should replace it with durable private object storage. Private image/video upload storage is not configured.
+
 Existing auth routes and user preference fields remain. The `isPublished` boolean is synchronized with language status for older records. `/api/languages` and its details routes keep their existing paths and response envelopes. Client route `/languages` remains in place.

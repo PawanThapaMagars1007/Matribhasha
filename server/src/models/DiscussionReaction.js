@@ -1,0 +1,2 @@
+import mongoose from 'mongoose';
+const schema=new mongoose.Schema({user:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true},targetType:{type:String,enum:['discussion','comment'],required:true},target:{type:mongoose.Schema.Types.ObjectId,required:true,index:true},reaction:{type:String,enum:['helpful','thanks','interesting'],default:'helpful'}},{timestamps:true});schema.index({user:1,targetType:1,target:1},{unique:true});export const DiscussionReaction=mongoose.model('DiscussionReaction',schema);

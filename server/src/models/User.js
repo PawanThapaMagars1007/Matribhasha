@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, trim: true, lowercase: true, unique: true, sparse: true, minlength: 3, maxlength: 30 },
   email: { type: String, required: true, trim: true, lowercase: true, unique: true, maxlength: 254 },
   passwordHash: { type: String, required: true, select: false },
-  role: { type: String, enum: ['learner', 'contributor', 'reviewer', 'languageExpert', 'languageAdmin', 'superAdmin'], default: 'learner' },
+  role: { type: String, enum: ['learner', 'contributor', 'reviewer', 'languageExpert', 'languageAdmin', 'superAdmin', 'moderator', 'culturalReviewer', 'communityAdmin', 'researcher'], default: 'learner' },
   profilePicture: { type: String, default: '' },
   preferences: {
     interfaceLanguage: { type: String, default: 'en' },

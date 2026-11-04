@@ -20,9 +20,13 @@ Vocabulary categories and entries, contextual meanings, multiple reviewed transl
 
 Language/variety-scoped courses and ordered modules/lessons; reusable lesson blocks; authenticated enrolments, prerequisites, sequential completion, progress, and resume position; server-side assessment scoring and retakes; approved-audio listening exercises; metadata-only speaking history with browser-local recordings; verified guided conversation scenarios; private rate-limited optional tutor with verified-content fallback; revision queue, configurable achievement rules, certificate issuance and privacy-preserving verification. Course content is drafted and reviewed through role-protected APIs. AI stays optional and no AI-generated content is published. See `docs/COURSE_MANAGEMENT.md`, `docs/LEARNING_PROGRESS.md`, `docs/AI_TUTOR.md`, and `docs/PRIVACY_AND_AUDIO.md`.
 
+## Phase 6 — culture, community, oral history, and preservation (implemented foundation)
+
+Community-scoped cultural entries, story and oral-history records, consent and access grants, contributor privacy settings, submission/review workflows, media metadata and protected audio, community membership/follows, discussions/comments/reactions/reports, notifications, withdrawal requests, and cultural discovery pages. Separate linguistic, cultural, permission, and source decisions are represented. See cultural policy docs. Production media storage, private image/video uploads, deeper dashboard flows, and operational moderation rollout remain deployment/product follow-ups.
+
 ## Later phases
 
-Consent-aware voice features, community contribution and review, cultural resources, moderation, accessibility/performance audits, deployment, and monitoring.
+Accessibility/performance audits, deployment, monitoring, and further community-led workflows.
 
 ## External setup
 

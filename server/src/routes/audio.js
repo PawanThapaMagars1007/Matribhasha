@@ -2,8 +2,10 @@ import { Router } from 'express';
 import express from 'express';
 import mongoose from 'mongoose';
 import { AudioAsset } from '../models/AudioAsset.js';
-import { requireAuth, requireRoles } from '../middleware/auth.js';
+import { requireAuth, requireRoles, optionalAuth } from '../middleware/auth.js';
 import { audioStorage, inspectAudio } from '../storage/audioStorage.js';
+import { CulturalMedia } from '../models/CulturalMedia.js';
+import { canAccessCulturalContent } from '../services/culturalAccess.js';
 
 const router = Router();
 const reviewerRoles = ['superAdmin', 'reviewer', 'languageAdmin', 'languageExpert'];
@@ -48,12 +50,14 @@ router.get('/admin', requireAuth, requireRoles(...reviewerRoles), async (req, re
   } catch (error) { return next(error); }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', optionalAuth, async (req, res, next) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ message: 'Audio not found.' });
     const asset = await AudioAsset.findOne({ _id: req.params.id, status: 'published', 'verification.status': 'verified', consentRecorded: true }).select('+storageKey');
     if (!asset) return res.status(404).json({ message: 'Audio not found.' });
-    return res.sendFile(audioStorage.resolve(asset.storageKey), { headers: { 'Content-Type': asset.mimeType, 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff' } }, (error) => { if (error && !res.headersSent) next(error); });
+    const culturalRefs = await CulturalMedia.find({ audioAsset: asset._id }).lean();
+    for (const culturalMedia of culturalRefs) if (!await canAccessCulturalContent(req.user, 'cultural-media', culturalMedia, { action: 'play' })) return res.status(404).json({ message: 'Audio not found.' });
+    return res.sendFile(audioStorage.resolve(asset.storageKey), { headers: { 'Content-Type': asset.mimeType, 'Cache-Control': culturalRefs.length ? 'private, no-store' : 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff' } }, (error) => { if (error && !res.headersSent) next(error); });
   } catch (error) { return next(error); }
 });
 

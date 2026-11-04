@@ -2,7 +2,7 @@
 
 **Learn your roots. Discover new languages.**
 
-Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. Phase 5 adds language-specific courses and learning paths, sequential lessons, server-scored assessments, approved-audio listening, private local speaking practice, guided conversations, a content-grounded optional tutor, achievements, revision queues, and course certificates. These build on the verified Phase 3–4 content systems; learning records are not seeded with invented linguistic content.
+Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. It now includes language-specific courses and learning paths, assessment and practice tools, and Phase 6 foundations for community-led cultural preservation, stories, oral history, contribution review, protected media, and moderated discussion. Learning content is not seeded with invented linguistic material.
 
 ## Requirements and setup
 
@@ -39,6 +39,18 @@ Matribhasha is a MERN platform for learning, exploring, documenting, and preserv
 - Authorized contributors prepare content through `/api/admin/content`; reviewers explicitly verify and publish. No linguistic content is seeded.
 
 ## Phase 5 features
+
+## Phase 6 features
+
+- Community-scoped cultural entries, stories, oral histories, and media carry language, variety, source, attribution, sensitivity, and access metadata.
+- Community pages, cultural browsing, and contribution intake provide public-facing and contributor workflows.
+- Separate linguistic, cultural, permission, and source reviews gate publication. Consent is recorded by scope; audio checks cultural access when streamed.
+- Public, registered, approved-community, researcher, and individually granted access levels are supported. Non-public access is logged.
+- Community membership requests, contributor privacy settings, notifications, discussions, reactions, reports, and withdrawal/takedown review are represented in the API.
+- Audio uploads use private, signature-checked storage. Image/video contributions currently accept secure public HTTPS links only; private image/video uploads are not configured.
+
+See `docs/CULTURAL_CONTENT_GUIDELINES.md`, `docs/COMMUNITY_CONTRIBUTIONS.md`, `docs/CONSENT_AND_MEDIA_POLICY.md`, `docs/MODERATION_GUIDELINES.md`, and `docs/ACCESS_CONTROL.md` for operating guidance. A consent checkbox is an intake assertion, not independent verification.
+
 
 - Courses are scoped to a language and optional variety, with configurable ordered modules and lessons. Lesson blocks can reuse reviewed characters, vocabulary, grammar, sentences, approved audio, and assessments.
 - Learners enrol, follow course prerequisites, complete lessons in sequence, resume progress, and see private dashboard activity.

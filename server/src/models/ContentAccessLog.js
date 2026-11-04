@@ -1,0 +1,2 @@
+import mongoose from 'mongoose';
+const schema=new mongoose.Schema({contentType:{type:String,enum:['cultural-entry','story','media'],required:true},content:{type:mongoose.Schema.Types.ObjectId,required:true,index:true},user:{type:mongoose.Schema.Types.ObjectId,ref:'User',default:null,index:true},action:{type:String,enum:['view','play','download','permission-change','withdrawal'],required:true},createdAt:{type:Date,default:Date.now}},{timestamps:false});schema.index({contentType:1,content:1,createdAt:-1});export const ContentAccessLog=mongoose.model('ContentAccessLog',schema);
