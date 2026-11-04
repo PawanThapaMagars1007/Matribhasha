@@ -11,6 +11,13 @@ import { LearningProgress } from '../src/models/LearningProgress.js';
 import { PracticeSession } from '../src/models/PracticeSession.js';
 import { AudioAsset } from '../src/models/AudioAsset.js';
 import { inspectAudio } from '../src/storage/audioStorage.js';
+import { Vocabulary } from '../src/models/Vocabulary.js';
+import { WordMeaning } from '../src/models/WordMeaning.js';
+import { Translation } from '../src/models/Translation.js';
+import { SentenceExercise } from '../src/models/SentenceExercise.js';
+import { UserSavedWord } from '../src/models/UserSavedWord.js';
+import { VocabularyProgress } from '../src/models/VocabularyProgress.js';
+import { scheduleReview } from '../src/services/spacedRepetition.js';
 
 test('language supports Unicode names and draft-safe defaults', async () => {
   const doc = new Language({ name: 'नेपाल भाषा', nativeName: 'नेपाल भाषा' });
@@ -94,4 +101,34 @@ test('audio assets require attribution and consent metadata, and upload validati
   assert.equal(asset.status, 'pending');
   assert.equal(inspectAudio(Buffer.from([0x1a, 0x45, 0xdf, 0xa3, ...Array(8).fill(0)]), 'audio/webm')?.format, 'webm');
   assert.equal(inspectAudio(Buffer.from('not an audio file'), 'audio/webm'), null);
+});
+
+test('vocabulary supports Unicode forms and stays unpublished until reviewed', async () => {
+  const word = new Vocabulary({ language: '507f1f77bcf86cd799439011', nativeForm: 'माया' });
+  await word.validate();
+  assert.equal(word.nativeForm, 'माया');
+  assert.equal(word.status, 'draft');
+  assert.equal(word.verification.status, 'unreviewed');
+});
+
+test('meanings and translations require explicit vocabulary and language associations', async () => {
+  await assert.rejects(new WordMeaning({ definition: 'meaning' }).validate(), /vocabulary/);
+  await assert.rejects(new Translation({ sourceVocabulary: '507f1f77bcf86cd799439011' }).validate(), /targetVocabulary/);
+  const translation = new Translation({ sourceVocabulary: '507f1f77bcf86cd799439011', targetVocabulary: '507f1f77bcf86cd799439012', sourceLanguage: '507f1f77bcf86cd799439013', targetLanguage: '507f1f77bcf86cd799439014' });
+  await translation.validate();
+  assert.equal(translation.status, 'draft');
+});
+
+test('sentence exercise answers are excluded from default model selection', () => {
+  assert.equal(SentenceExercise.schema.path('answer').options.select, false);
+});
+
+test('learner vocabulary records are user scoped and spaced repetition schedules each rating', async () => {
+  const saved = new UserSavedWord({ user: '507f1f77bcf86cd799439011', vocabulary: '507f1f77bcf86cd799439012', language: '507f1f77bcf86cd799439013' });
+  await saved.validate();
+  const progress = new VocabularyProgress({ user: saved.user, vocabulary: saved.vocabulary, language: saved.language });
+  await progress.validate();
+  const now = new Date('2026-01-01T00:00:00Z');
+  assert.equal(scheduleReview('again', progress.toObject(), now).status, 'needs-revision');
+  assert.equal(scheduleReview('good', progress.toObject(), now).intervalDays, 1);
 });

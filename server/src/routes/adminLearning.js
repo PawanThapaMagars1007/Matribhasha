@@ -7,6 +7,7 @@ import { LanguageVariety } from '../models/LanguageVariety.js';
 import { Script } from '../models/Script.js';
 import { CharacterCategory } from '../models/CharacterCategory.js';
 import { Character } from '../models/Character.js';
+import { Vocabulary } from '../models/Vocabulary.js';
 import { Pronunciation } from '../models/Pronunciation.js';
 import { AudioAsset } from '../models/AudioAsset.js';
 import { ContentRevision } from '../models/ContentRevision.js';
@@ -63,7 +64,7 @@ router.get('/characters', ...edit, async (req, res, next) => {
   catch (error) { return next(error); }
 });
 router.get('/pronunciations', ...edit, async (req, res, next) => {
-  try { const page = pageNum(req.query.page), limit = limitNum(req.query.limit); const filter = {}; if (req.query.status) filter.status = req.query.status; if (req.query.character && mongoose.isValidObjectId(req.query.character)) filter.character = req.query.character; const [pronunciations, total] = await Promise.all([Pronunciation.find(filter).sort({ updatedAt: -1 }).skip((page - 1) * limit).limit(limit).populate('character', 'grapheme displayForm name').populate('audioAsset', 'format status attribution').lean(), Pronunciation.countDocuments(filter)]); return res.json({ pronunciations, pagination: paginate(page, limit, total) }); }
+  try { const page = pageNum(req.query.page), limit = limitNum(req.query.limit); const filter = {}; if (req.query.status) filter.status = req.query.status; if (req.query.character && mongoose.isValidObjectId(req.query.character)) filter.character = req.query.character; if (req.query.vocabulary && mongoose.isValidObjectId(req.query.vocabulary)) filter.vocabulary = req.query.vocabulary; const [pronunciations, total] = await Promise.all([Pronunciation.find(filter).sort({ updatedAt: -1 }).skip((page - 1) * limit).limit(limit).populate('character', 'grapheme displayForm name').populate('vocabulary', 'nativeForm romanTransliteration').populate('audioAsset', 'format status attribution').lean(), Pronunciation.countDocuments(filter)]); return res.json({ pronunciations, pagination: paginate(page, limit, total) }); }
   catch (error) { return next(error); }
 });
 router.post('/characters', ...edit, async (req, res, next) => {
@@ -97,13 +98,16 @@ router.put('/characters/:id', ...edit, async (req, res, next) => {
 
 router.post('/pronunciations', ...edit, async (req, res, next) => {
   try {
-    const parsed = z.object({ character: objectId, variety: objectId.nullable().optional(), notation: z.enum(['ipa', 'romanization', 'description', 'other']).optional(), notationText: z.string().max(150).optional(), context: z.string().max(1000).optional(), audioAsset: objectId.nullable().optional(), speakerLabel: z.string().max(100).optional(), source: z.string().max(500).optional(), attribution: z.string().max(300).optional() }).strict().safeParse(req.body);
+    const parsed = z.object({ character: objectId.optional(), vocabulary: objectId.optional(), variety: objectId.nullable().optional(), notation: z.enum(['ipa', 'romanization', 'description', 'other']).optional(), notationText: z.string().max(150).optional(), context: z.string().max(1000).optional(), audioAsset: objectId.nullable().optional(), speakerLabel: z.string().max(100).optional(), source: z.string().max(500).optional(), attribution: z.string().max(300).optional() }).strict().safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ message: 'Please check the pronunciation details.' });
-    const character = await Character.findById(parsed.data.character); if (!character) return res.status(404).json({ message: 'Character not found.' });
-    if (parsed.data.variety && character.variety && String(character.variety) !== parsed.data.variety) return res.status(400).json({ message: 'The pronunciation variety must match the character variety.' });
-    if (parsed.data.variety && !(await LanguageVariety.exists({ _id: parsed.data.variety, language: character.language }))) return res.status(400).json({ message: 'The pronunciation variety must belong to the character language.' });
+    if (Boolean(parsed.data.character) === Boolean(parsed.data.vocabulary)) return res.status(400).json({ message: 'Choose exactly one character or vocabulary item for the pronunciation.' });
+    const targetModel = parsed.data.character ? Character : Vocabulary; const targetId = parsed.data.character || parsed.data.vocabulary;
+    const target = await targetModel.findById(targetId); if (!target) return res.status(404).json({ message: 'Learning item not found.' });
+    if (parsed.data.variety && target.variety && String(target.variety) !== parsed.data.variety) return res.status(400).json({ message: 'The pronunciation variety must match the learning item variety.' });
+    if (parsed.data.variety && !(await LanguageVariety.exists({ _id: parsed.data.variety, language: target.language }))) return res.status(400).json({ message: 'The pronunciation variety must belong to the learning item language.' });
     if (parsed.data.audioAsset && !(await AudioAsset.exists({ _id: parsed.data.audioAsset, status: 'published', 'verification.status': 'verified', consentRecorded: true }))) return res.status(400).json({ message: 'Only approved audio with recorded consent can be attached.' });
-    const pronunciation = await Pronunciation.create({ ...parsed.data, language: character.language, variety: parsed.data.variety || character.variety, verification: { status: 'pending' }, status: 'under-review', createdBy: req.user._id });
+    const pronunciation = await Pronunciation.create({ ...parsed.data, language: target.language, variety: parsed.data.variety || target.variety, verification: { status: 'pending' }, status: 'under-review', createdBy: req.user._id });
+    await targetModel.updateOne({ _id: target._id }, { $addToSet: { pronunciations: pronunciation._id } });
     return res.status(201).json({ pronunciation });
   } catch (error) { return next(error); }
 });

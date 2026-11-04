@@ -12,9 +12,9 @@ Independent Language, LanguageVariety, and Script models; public filtered catalo
 
 Configurable character categories and orthographic units, reviewed character browsing, pronunciation and approved audio, local freehand and microphone practice, recognition/matching/listening sessions, and per-user progress. Alphabet information is not seeded; communities and experts must provide and review it.
 
-## Phase 4 — Vocabulary and sentence learning
+## Phase 4 — Vocabulary and sentence learning (implemented foundation)
 
-Vocabulary, dictionary, grammar and sentence-based learning. This phase has not been started.
+Vocabulary categories and entries, contextual meanings, multiple reviewed translations, example sentences, language grammar categories/lessons, and sentence exercises. Public dictionary, vocabulary, grammar, sentence, and sentence-practice APIs filter live content; exercise answers stay server-side. Signed-in saved words, vocabulary spaced-repetition reviews, grammar progress, and sentence progress are private per user. Learner pages cover vocabulary/flashcards, multilingual dictionary search, grammar, and sentences. Content editor/reviewer endpoints use role checks and revision snapshots. No linguistic content is seeded; empty states are expected until experts publish records.
 
 ## Later phases
 

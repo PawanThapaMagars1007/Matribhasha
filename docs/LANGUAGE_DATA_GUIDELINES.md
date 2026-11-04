@@ -1,5 +1,9 @@
 # Language data guidelines
 
+## Vocabulary, grammar, and sentence content
+
+Contributors should cite a source and keep distinct meanings, dialect/variety, and usage contexts as separate records. A translation is a reviewed relationship between source and target vocabulary, not an assumed one-to-one equivalent. Do not publish guesses as verified content. Sentence translations require their own verification status. Attach only approved, consent-recorded audio. Exercises must use stable token or choice IDs and an answer composed from those IDs. New Phase 4 content remains under review until a qualified reviewer verifies and publishes it. Do not add invented seed vocabulary or translations.
+
 - Collect preferred names, spellings, translations, classification, and orthography with community input and attributed sources.
 - Treat language, ethnicity, caste, and identity as distinct concepts. Do not merge distinct languages based only on geography.
 - A language may have multiple varieties and writing systems, changing conventions, or an oral tradition. Do not assume Devanagari, a standardized variety, or an alphabet.

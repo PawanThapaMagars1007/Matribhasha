@@ -2,7 +2,7 @@
 
 **Learn your roots. Discover new languages.**
 
-Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. Phase 3 extends the language foundation with reviewed writing units, flexible script-specific categories, pronunciation records, consent-reviewed audio, freehand writing practice, listening/recognition activities, and learner progress. Learning records are data-driven and are not seeded with invented alphabets or pronunciations.
+Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. Phase 4 adds reviewed vocabulary and meanings, multilingual dictionary entries, grammar lessons, sentence examples and server-checked exercises, spaced vocabulary review, and private learner progress. Phase 3 writing units and consent-reviewed audio remain available. Learning records are data-driven and are not seeded with invented linguistic content.
 
 ## Requirements and setup
 
@@ -28,6 +28,15 @@ Matribhasha is a MERN platform for learning, exploring, documenting, and preserv
 - Learners can browse characters, hear approved recordings, practise drawing on a canvas, record their own voice locally, and complete recognition, matching, and listening questions from approved records.
 - Progress tracks views and practice actions separately from explicit completion. Quiz answers are checked against server-held practice sessions.
 - Audio uploads are signature checked, size limited, and require consent and attribution. Published audio is served only after review. Learner microphone recordings and canvas strokes are not uploaded.
+
+## Phase 4 features
+
+- Reviewed vocabulary, contextual meanings, multiple translations, example sentences, and vocabulary pronunciation records.
+- Dictionary search covers native forms, transliteration, alternatives, and verified definitions, with distinct target-language translations and context.
+- Grammar lessons and sentence examples are shown only after review and publication; sentence translation strings are individually verified.
+- Sentence exercises keep answers server-side and return only sanitized choices/tokens until answer submission.
+- Signed-in users can save words, track vocabulary/grammar/sentence progress, and review vocabulary on a configurable spaced-repetition schedule.
+- Authorized contributors prepare content through `/api/admin/content`; reviewers explicitly verify and publish. No linguistic content is seeded.
 - The development audio adapter writes approved files under `server/storage/audio/` (ignored by Git); replace it with durable private object storage for deployment. No storage credentials are required by the client.
 
 ## API

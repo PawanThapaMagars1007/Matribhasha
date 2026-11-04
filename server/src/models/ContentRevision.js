@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const contentRevisionSchema = new mongoose.Schema({
-  entityType: { type: String, enum: ['category', 'character', 'pronunciation'], required: true, index: true },
+  entityType: { type: String, enum: ['category', 'character', 'pronunciation', 'vocabulary-category', 'vocabulary', 'word-meaning', 'translation', 'example-sentence', 'grammar-category', 'grammar-lesson', 'sentence-exercise'], required: true, index: true },
   entity: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
   snapshot: { type: mongoose.Schema.Types.Mixed, required: true },
   changedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

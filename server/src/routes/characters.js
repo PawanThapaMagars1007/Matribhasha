@@ -44,9 +44,10 @@ router.get('/characters/:id/pronunciations', async (req, res, next) => {
 router.get('/pronunciations/:id', async (req, res, next) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ message: 'Pronunciation not found.' });
-    const pronunciation = await Pronunciation.findOne({ _id: req.params.id, ...live }).populate({ path: 'audioAsset', match: { status: 'published', 'verification.status': 'verified', consentRecorded: true }, select: 'format mimeType durationSeconds attribution speakerLabel' }).populate({ path: 'character', match: live, select: 'grapheme displayForm name script' }).lean();
-    if (!pronunciation?.character) return res.status(404).json({ message: 'Pronunciation not found.' });
-    if (!(await languageIsPublished(pronunciation.language)) || !(await Script.exists({ _id: pronunciation.character.script, status: 'published', isActive: true }))) return res.status(404).json({ message: 'Pronunciation not found.' });
+    const pronunciation = await Pronunciation.findOne({ _id: req.params.id, ...live }).populate({ path: 'audioAsset', match: { status: 'published', 'verification.status': 'verified', consentRecorded: true }, select: 'format mimeType durationSeconds attribution speakerLabel' }).populate({ path: 'character', match: live, select: 'grapheme displayForm name script' }).populate({ path: 'vocabulary', match: live, select: 'nativeForm romanTransliteration' }).lean();
+    if (!pronunciation || (!pronunciation.character && !pronunciation.vocabulary)) return res.status(404).json({ message: 'Pronunciation not found.' });
+    if (!(await languageIsPublished(pronunciation.language))) return res.status(404).json({ message: 'Pronunciation not found.' });
+    if (pronunciation.character && !(await Script.exists({ _id: pronunciation.character.script, status: 'published', isActive: true }))) return res.status(404).json({ message: 'Pronunciation not found.' });
     return res.json({ pronunciation });
   } catch (error) { return next(error); }
 });

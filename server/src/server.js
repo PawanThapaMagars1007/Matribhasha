@@ -14,6 +14,12 @@ import characterRoutes from './routes/characters.js';
 import practiceRoutes from './routes/practice.js';
 import adminLearningRoutes from './routes/adminLearning.js';
 import audioRoutes from './routes/audio.js';
+import vocabularyRoutes from './routes/vocabulary.js';
+import grammarRoutes from './routes/grammar.js';
+import sentencePracticeRoutes from './routes/sentencePractice.js';
+import userLearningRoutes from './routes/userLearning.js';
+import dictionaryRoutes from './routes/dictionary.js';
+import adminContentRoutes from './routes/adminContent.js';
 import { errorHandler, notFound } from './middleware/errors.js';
 
 const app = express();
@@ -31,7 +37,13 @@ app.use('/api/scripts', scriptRoutes);
 app.use('/api', characterRoutes);
 app.use('/api/practice', practiceRoutes);
 app.use('/api/admin/learning', adminLearningRoutes);
+app.use('/api/admin/content', adminContentRoutes);
 app.use('/api/audio', audioRoutes);
+app.use('/api/users/learning', userLearningRoutes);
+app.use('/api/sentence-practice', sentencePracticeRoutes);
+app.use('/api', vocabularyRoutes);
+app.use('/api', dictionaryRoutes);
+app.use('/api', grammarRoutes);
 app.use(notFound);
 app.use(errorHandler);
 

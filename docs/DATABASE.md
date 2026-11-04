@@ -1,5 +1,9 @@
 # Database design — Phase 2
 
+## Phase 4 collections
+
+`VocabularyCategory`, `Vocabulary`, `WordMeaning`, `Translation`, `ExampleSentence`, `GrammarCategory`, `GrammarLesson`, and `SentenceExercise` hold reviewed content. Vocabulary pronunciations share `Pronunciation` with Phase 3 via mutually exclusive `character` or `vocabulary` references. `UserSavedWord`, `VocabularyProgress`, `VocabularyReview`, `GrammarProgress`, `SentencePracticeSession`, and `SentenceProgress` hold learner-private state. Exercise answers are hidden from ordinary model selection and copied only to owner-bound practice sessions.
+
 MongoDB stores independently managed languages, varieties, and writing systems. All records use Mongoose timestamps, explicit publication state, an active flag, and verification metadata where linguistic claims are made.
 
 ## Collections and relationships

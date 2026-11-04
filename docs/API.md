@@ -1,5 +1,18 @@
 # API
 
+## Phase 4: vocabulary, dictionary, grammar, and sentences
+
+- `GET /api/vocabulary/categories?language=&variety=` lists live categories.
+- `GET /api/languages/:languageId/vocabulary` and `GET /api/vocabulary/search?q=&language=&variety=&category=&script=&targetLanguage=&targetVariety=&page=&limit=` list reviewed words, contextual meanings, optional reviewed translations, pronunciations, and examples. `GET /api/vocabulary/:id` returns one reviewed entry.
+- `GET /api/dictionary/search?sourceLanguage=&targetLanguage=&sourceVariety=&targetVariety=&q=&page=&limit=` searches source words and verified definitions; translations retain their context and target variety. `GET /api/dictionary/entry/:id` returns the full entry.
+- `GET /api/grammar/categories`, `/api/languages/:languageId/grammar`, `/api/grammar`, `/api/grammar/:id` serve reviewed grammar content.
+- `GET /api/languages/:languageId/sentences`, `/api/sentences`, `/api/sentences/:id`, `/api/sentences/exercises?language=` serve reviewed examples and sanitized exercises.
+- Signed-in routes under `/api/users/learning`: `GET/POST /saved-words`, `DELETE /saved-words/:id`, `GET /vocabulary-progress`, `POST /vocabulary-progress/:vocabularyId` (`view`, `again`, `hard`, `good`, `easy`), `GET /grammar-progress`, and `POST /grammar-progress/:lessonId` (`view`, `complete`, `exercise`).
+- Signed-in sentence checking uses `POST /api/sentence-practice/session` with `{exerciseId}` followed by `POST /api/sentence-practice/answer` with `{sessionId, answer}`. Answers are never included in public exercise responses.
+- Reviewer/editor content routes under `/api/admin/content/:type` support list/create/update for vocabulary-categories, vocabulary, meanings, translations, sentences, grammar-categories, grammar-lessons, and sentence-exercises. New records start under review; update with `verificationStatus: "verified"`, then `status: "published"`.
+
+Learner content requires active, verified, published records and a published language. Sentence translations are individually verified. Private learning records are scoped to the authenticated user.
+
 Base URL: `http://localhost:5000/api`. Protected routes accept `Authorization: Bearer <token>`. Responses use consistent resource envelopes and `{ message }` errors. Public collections only return active published records, except explicitly documented legacy published languages.
 
 | Method | Path | Access | Behavior |
