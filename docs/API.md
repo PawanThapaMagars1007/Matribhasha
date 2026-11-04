@@ -1,5 +1,18 @@
 # API
 
+## Phase 5: courses, assessments, listening, speaking, conversations
+
+- `GET /api/courses?language=&variety=&difficulty=` and `GET /api/courses/:id` discover published courses. `POST /api/courses/:id/enroll`; `GET /api/users/courses`; `GET /api/users/courses/:courseId/progress` are private.
+- `GET /api/lessons/:id` requires an active enrolment and sequential prerequisites. `POST /api/lessons/:id/complete` explicitly saves completion; `PUT /api/lessons/:id/save` stores a private saved-for-later flag.
+- `GET /api/assessments/:id` requires enrolment and omits answer keys. `POST /api/assessments/:id/submit` validates answers and returns the backend score/explanations. `GET /api/users/assessment-results` is owner-scoped.
+- `GET /api/listening`, `GET /api/listening/:id`, `POST /api/listening/:id/submit` expose only approved recordings/exercises and use server-scored listening assessments.
+- `POST /api/speaking/sessions` stores only target and self-rating metadata; `GET /api/speaking/history` returns only the signed-in user's records. Audio is not uploaded.
+- `GET /api/conversations/scenarios[/:id]` reads published scenarios. `POST /api/conversations`, `GET /api/conversations[/:id]`, and `POST /api/conversations/:id/messages` are private. Tutor messages are limited to 8 per minute per client.
+- `GET /api/users/learning-dashboard`, `/api/users/revision-queue`, `/api/users/achievements`, and `/api/users/certificates` are private. `GET /api/users/certificates/verify/:certificateId` returns course/completion validity without user identity.
+- Reviewer endpoints: `/api/admin/courses` (GET/POST), `/api/admin/courses/:id` (GET/PUT), `/api/admin/courses/:id/modules`, `/api/admin/modules/:id/lessons`, `/api/admin/courses/:id/assessments`, `/api/admin/courses/:id/listening`, `/api/admin/languages/:languageId/conversations`, and `/api/admin/content/:type/:id/review`.
+
+All user-owned records are filtered by the authenticated user. Course and activity reads require verified published content and approved audio. No answer keys are returned before submission.
+
 ## Phase 4: vocabulary, dictionary, grammar, and sentences
 
 - `GET /api/vocabulary/categories?language=&variety=` lists live categories.

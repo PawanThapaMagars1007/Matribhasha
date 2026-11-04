@@ -2,7 +2,7 @@
 
 **Learn your roots. Discover new languages.**
 
-Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. Phase 4 adds reviewed vocabulary and meanings, multilingual dictionary entries, grammar lessons, sentence examples and server-checked exercises, spaced vocabulary review, and private learner progress. Phase 3 writing units and consent-reviewed audio remain available. Learning records are data-driven and are not seeded with invented linguistic content.
+Matribhasha is a MERN platform for learning, exploring, documenting, and preserving languages spoken in Nepal. Phase 5 adds language-specific courses and learning paths, sequential lessons, server-scored assessments, approved-audio listening, private local speaking practice, guided conversations, a content-grounded optional tutor, achievements, revision queues, and course certificates. These build on the verified Phase 3–4 content systems; learning records are not seeded with invented linguistic content.
 
 ## Requirements and setup
 
@@ -37,6 +37,15 @@ Matribhasha is a MERN platform for learning, exploring, documenting, and preserv
 - Sentence exercises keep answers server-side and return only sanitized choices/tokens until answer submission.
 - Signed-in users can save words, track vocabulary/grammar/sentence progress, and review vocabulary on a configurable spaced-repetition schedule.
 - Authorized contributors prepare content through `/api/admin/content`; reviewers explicitly verify and publish. No linguistic content is seeded.
+
+## Phase 5 features
+
+- Courses are scoped to a language and optional variety, with configurable ordered modules and lessons. Lesson blocks can reuse reviewed characters, vocabulary, grammar, sentences, approved audio, and assessments.
+- Learners enrol, follow course prerequisites, complete lessons in sequence, resume progress, and see private dashboard activity.
+- Assessment answer keys stay server-side; the backend checks answers, scores attempts, enforces retake limits, and records results.
+- Listening requires verified, consent-recorded audio. Speaking recordings remain in the browser and are never uploaded; saved history contains only the target and learner self-assessment.
+- Guided conversations use reviewer-published scenarios. The optional tutor reads `TUTOR_API_KEY`, `TUTOR_API_BASE_URL`, and `TUTOR_MODEL` on the server. Without a provider, it returns only matching approved Matribhasha content or explains that no verified answer is available.
+- Achievements are rule-based and certificates are issued after configured completion requirements; public certificate lookup does not reveal learner identity.
 - The development audio adapter writes approved files under `server/storage/audio/` (ignored by Git); replace it with durable private object storage for deployment. No storage credentials are required by the client.
 
 ## API

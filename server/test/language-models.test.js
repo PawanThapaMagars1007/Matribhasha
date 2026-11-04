@@ -18,6 +18,14 @@ import { SentenceExercise } from '../src/models/SentenceExercise.js';
 import { UserSavedWord } from '../src/models/UserSavedWord.js';
 import { VocabularyProgress } from '../src/models/VocabularyProgress.js';
 import { scheduleReview } from '../src/services/spacedRepetition.js';
+import { Course } from '../src/models/Course.js';
+import { CourseModule } from '../src/models/CourseModule.js';
+import { CourseLesson } from '../src/models/CourseLesson.js';
+import { CourseEnrollment } from '../src/models/CourseEnrollment.js';
+import { Assessment } from '../src/models/Assessment.js';
+import { AssessmentAttempt } from '../src/models/AssessmentAttempt.js';
+import { SpeakingPractice } from '../src/models/SpeakingPractice.js';
+import { CourseCertificate } from '../src/models/CourseCertificate.js';
 
 test('language supports Unicode names and draft-safe defaults', async () => {
   const doc = new Language({ name: 'नेपाल भाषा', nativeName: 'नेपाल भाषा' });
@@ -131,4 +139,37 @@ test('learner vocabulary records are user scoped and spaced repetition schedules
   const now = new Date('2026-01-01T00:00:00Z');
   assert.equal(scheduleReview('again', progress.toObject(), now).status, 'needs-revision');
   assert.equal(scheduleReview('good', progress.toObject(), now).intervalDays, 1);
+});
+
+test('courses adapt through explicit language structure and remain drafts before review', async () => {
+  const course = new Course({ title: 'First conversations', description: 'A reviewed language course.', language: '507f1f77bcf86cd799439011', difficulty: 'absolute-beginner' });
+  await course.validate();
+  assert.equal(course.status, 'draft');
+  assert.equal(course.variety, null);
+  assert.equal(course.completionRequiresAllLessons, true);
+});
+
+test('course modules and lessons preserve configured order and flexible block types', async () => {
+  const module = new CourseModule({ course: '507f1f77bcf86cd799439011', title: 'Speaking first', order: 0 });
+  await module.validate();
+  const lesson = new CourseLesson({ course: module.course, module: module._id, title: 'Greetings', order: 0, blocks: [{ type: 'SPEAKING_EXERCISE', speakingPrompt: 'Say hello' }] });
+  await lesson.validate();
+  assert.equal(lesson.blocks[0].type, 'SPEAKING_EXERCISE');
+  assert.equal(lesson.completionRule, 'view-and-confirm');
+});
+
+test('assessment answer keys are hidden by default and attempts store server scores', async () => {
+  assert.equal(Assessment.schema.path('answerKey').options.select, false);
+  const attempt = new AssessmentAttempt({ user: '507f1f77bcf86cd799439011', assessment: '507f1f77bcf86cd799439012', course: '507f1f77bcf86cd799439013', answers: { q1: 'a' }, score: 100, passed: true, attemptNumber: 1 });
+  await attempt.validate();
+  assert.equal(attempt.score, 100);
+});
+
+test('enrolments are user-course scoped and speaking practice stores no recording by default', async () => {
+  const enrollment = new CourseEnrollment({ user: '507f1f77bcf86cd799439011', course: '507f1f77bcf86cd799439012', language: '507f1f77bcf86cd799439013' });
+  await enrollment.validate();
+  const speaking = new SpeakingPractice({ user: enrollment.user, language: enrollment.language, targetType: 'prompt', selfAssessment: 'getting-there' });
+  await speaking.validate();
+  assert.equal(speaking.recordingStored, false);
+  assert.equal(CourseCertificate.schema.path('certificateId').options.unique, true);
 });

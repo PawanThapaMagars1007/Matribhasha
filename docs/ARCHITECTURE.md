@@ -1,5 +1,11 @@
 # Architecture
 
+## Phase 5 learning system
+
+`Course` contains language/variety scope, objectives, rules and ordered module references. `CourseModule` and `CourseLesson` keep language-specific sequence and reusable blocks; block references reuse the existing Character, Vocabulary, GrammarLesson, ExampleSentence, AudioAsset and Assessment models. `CourseEnrollment` and `LessonProgress` are private per user. Assessment prompts/options are separate from the `select: false` answer key; `AssessmentAttempt` is owner-scoped and stores server-computed score. `ListeningExercise` references approved AudioAsset and an assessment. `SpeakingPractice` stores self-assessment metadata only; recordings remain browser-local. `ConversationScenario` is reviewed content, while tutor conversations/messages are private. `Achievement` rules are evaluated from saved activity and `CourseCertificate` identifiers have a privacy-preserving verification read.
+
+Lesson access requires enrollment, course/module/lesson publication and completion of prior lessons across the ordered course path. A lesson is not completed merely by opening it. Course publication, module/lesson publication, assessments and scenarios have separate review events recorded in `ContentRevision`.
+
 ## Phase 4 content and learning
 
 Vocabulary, WordMeaning, Translation, ExampleSentence, GrammarCategory, GrammarLesson, and SentenceExercise are independent, language-scoped records. Vocabulary can have multiple contextual meanings, translations, and pronunciations. Public route filters require published status, active state, and verified metadata; parent language publication is checked. Sentence translation subrecords are filtered individually. Exercise answers use a select-false model field and owner-bound server sessions. `UserSavedWord`, `VocabularyProgress`/`VocabularyReview`, `GrammarProgress`, and `SentenceProgress` are private and keyed by user. Admin content edits create `ContentRevision` snapshots.

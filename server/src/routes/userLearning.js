@@ -9,6 +9,7 @@ import { VocabularyReview } from '../models/VocabularyReview.js';
 import { GrammarLesson } from '../models/GrammarLesson.js';
 import { GrammarProgress } from '../models/GrammarProgress.js';
 import { scheduleReview, defaultReviewConfig } from '../services/spacedRepetition.js';
+import { award } from './courses.js';
 
 const router = Router();
 const live = { status: 'published', isActive: true, 'verification.status': 'verified' };
@@ -37,6 +38,7 @@ router.post('/vocabulary-progress/:vocabularyId', async (req, res, next) => {
       const rating = p.data.action, prior = progress.toObject(), schedule = scheduleReview(rating, prior, new Date(), defaultReviewConfig(process.env));
       progress = await VocabularyProgress.findOneAndUpdate({ user: req.user._id, vocabulary: word._id }, { $set: { status: schedule.status, repetitions: schedule.repetitions, intervalDays: schedule.intervalDays, nextReviewAt: schedule.nextReviewAt, lastReviewedAt: new Date() } }, { new: true });
       await VocabularyReview.create({ user: req.user._id, vocabulary: word._id, rating, previousIntervalDays: prior.intervalDays, nextIntervalDays: schedule.intervalDays, nextReviewAt: schedule.nextReviewAt });
+      await award(req.user._id, 'vocabulary-review');
       await UserSavedWord.findOneAndUpdate({ user: req.user._id, vocabulary: word._id }, { $set: { lastStudiedAt: new Date(), needsRevision: rating === 'again' } });
     }
     return res.json({ progress });

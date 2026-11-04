@@ -1,5 +1,16 @@
 # Database design — Phase 2
 
+## Phase 5 collections
+
+- `Course` → language, optional variety, prerequisites, modules, configured assessments and completion rules.
+- `CourseModule` → course and ordered `CourseLesson` references. `CourseLesson` stores ordered content blocks referencing Phase 3–4 records.
+- `CourseEnrollment` → unique user/course; `LessonProgress` → unique user/lesson with completion and saved state.
+- `Assessment` → public prompts/options and a select-false `answerKey`; `AssessmentAttempt` → private user answers and server-computed result. `ListeningExercise` ties approved audio to a listening assessment.
+- `SpeakingPractice` stores target and self-rating, never microphone bytes. `ConversationScenario` is reviewable; `TutorConversation` and `TutorMessage` are private to their owner.
+- `Achievement` stores configurable criteria; `UserAchievement` is unique per user/rule. `CourseCertificate` is unique per user/course and has an opaque verification identifier.
+
+Indexes cover language discovery, course sequence, user/course enrolment, user/lesson progress, assessment attempts, private conversation history, and unique achievement/certificate ownership.
+
 ## Phase 4 collections
 
 `VocabularyCategory`, `Vocabulary`, `WordMeaning`, `Translation`, `ExampleSentence`, `GrammarCategory`, `GrammarLesson`, and `SentenceExercise` hold reviewed content. Vocabulary pronunciations share `Pronunciation` with Phase 3 via mutually exclusive `character` or `vocabulary` references. `UserSavedWord`, `VocabularyProgress`, `VocabularyReview`, `GrammarProgress`, `SentencePracticeSession`, and `SentenceProgress` hold learner-private state. Exercise answers are hidden from ordinary model selection and copied only to owner-bound practice sessions.

@@ -1,0 +1,2 @@
+import mongoose from 'mongoose';
+const schema=new mongoose.Schema({user:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true},achievement:{type:mongoose.Schema.Types.ObjectId,ref:'Achievement',required:true},earnedAt:{type:Date,default:Date.now},progressValue:{type:Number,min:0,default:0}},{timestamps:false});schema.index({user:1,achievement:1},{unique:true});export const UserAchievement=mongoose.model('UserAchievement',schema);
